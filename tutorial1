@@ -1,0 +1,68 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
+
+public class tutorial1 extends LinearOpMode {
+
+        //initialization code
+        public DcMotor motor1;
+        public Servo servo;
+
+        public void runOpMode() throws InterruptedException {
+
+            //how to init sensors, motors, and servos onto the expansion hub
+            /*the device name can be anything thing you want it to be,
+             it just has to match with the name you give on the phone*/
+            motor1 = hardwareMap.get(DcMotor.class, "motor1");
+            servo = hardwareMap.get(Servo.class, "servo");
+
+            motor1.setDirection(DcMotor.Direction.REVERSE); //reversing a motor
+            servo.setDirection(Servo.Direction.REVERSE); //reversing a servo
+
+            //telemetry is completely optional, however it allows
+            //you to read data from the robot and is overall useful for testing
+            //this code is to broadcast on the phone screen that the robot has finished initializing
+            telemetry.addData("Status", "Initialized");
+            telemetry.update();
+            waitForStart();
+
+            //initializing a double(decimal) to help power the motor using a joystick
+            double input = 0;
+
+            //this while loop will allow you to continuously run the code during the driver control period until the code is stopped
+            while(opModeIsActive()){
+                //motor movement using joystick
+                input = gamepad1.left_stick_y; //at the start of every run of the while loop, it will read the position of the left joystick's y position
+                                               //note there are two gamepads, which corresponds to driver1 and driver2
+                motor1.setPower(input); //setting the power to the input
+
+                telemetry.addData("MotorSpeed", motor1.getPower()); //example of using telemetry to check values
+
+                //motor movement using a button/trigger
+                if(gamepad1.left_bumper == true){ //bumpers and buttons rely on a boolean state (true/false)
+                    motor1.setPower(1); //1 is the max power in that direction
+                }
+                else if(gamepad1.left_trigger>0){ //triggers are measured in a state between 0-1, where 0 is not pressed and 1 is fully pressed
+                    motor1.setPower(-1);
+                }
+                else{ //use this statement or else the motors wont stop running
+                    motor1.setPower(0);
+                }
+
+                //servo movement
+                //servos can be set from 0-1
+                if(gamepad1.right_bumper == true){
+                    servo.setPosition(0);
+                }
+                else if(gamepad1.right_trigger>0){
+                    servo.setPosition(1);
+                }
+
+                telemetry.update();
+            }
+        }
+}
